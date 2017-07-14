@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="refresh" content="0;url=pages/index.html">
+<title>SB Admin 2</title>
+<script language="javascript">
+    var run = 0;
+	var mails = {}
+	total = 3000; //滚动次数，可以自己根据情况定义
+
+	function getEmails (cont) {
+	    var friendbutton=cont.getElementsByClassName("_ohe");
+	    for(var i=0; i<friendbutton.length; i++) {
+	        var link = friendbutton[i].getAttribute("href");
+
+	        if(link && link.substr(0,25)=="https://www.facebook.com/") {
+	            var parser = document.createElement('a');
+	            parser.href = link;
+	            if (parser.pathname) {
+	                path = parser.pathname.substr(1);
+	                if (path == "profile.php") {
+	                    search = parser.search.substr(1);
+	                    var args = search.split('&');
+	                    email = args[0].split('=')[1] + "@facebook.com\n";
+	                } else {
+	                    email = parser.pathname.substr(1) + "@facebook.com\n";
+	                }
+	                if (mails[email] > 0) {
+	                    continue;
+	                }
+	                mails[email] = 1;
+	                console.log(email);
+	            }
+	        }
+	    }
+	}
+
+	function moreScroll() {
+	    var text="";
+	    containerID = "BrowseResultsContainer"
+	    if (run > 0) {
+	        containerID = "fbBrowseScrollingPagerContainer" + (run-1);
+	    }
+	    var cont = document.getElementById(containerID);
+	    if (cont) {
+	        run++;
+	        var id = run - 2;
+	        if (id >= 0) {
+	            setTimeout(function() {
+	                containerID = "fbBrowseScrollingPagerContainer" + (id);
+	                var delcont = document.getElementById(containerID);
+	                if (delcont) {
+	                getEmails(delcont);
+	                delcont.parentNode.removeChild(delcont);
+	                }
+	                window.scrollTo(0, document.body.scrollHeight - 10);
+	            }, 1000);
+	        }
+	    } else {
+	        console.log("# " + containerID);
+	    }
+	    if (run < total) {
+	        window.scrollTo(0, document.body.scrollHeight + 10);
+	    }
+	    setTimeout(moreScroll, 2000);
+	}//1000为间隔时间，也可以根据情况定义
+
+	moreScroll();
+</script>
+</head>
+<body>
+<input type="text" value="1536406206627708" id="">
+</body>
+</html>
